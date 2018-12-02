@@ -167,7 +167,6 @@ var onPictureClick = function (thumbnail, photo) {
     commentsList.innerHTML = '';
     createCommentsList(photo.comments);
     openSetupBigPicture();
-    console.log(photo);
   });
 };
 

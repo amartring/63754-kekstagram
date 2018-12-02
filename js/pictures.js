@@ -164,8 +164,10 @@ createPhotosArray();
 var onPictureClick = function (thumbnail, photo) {
   thumbnail.addEventListener('click', function () {
     createBigPicture(photo);
+    commentsList.innerHTML = '';
     createCommentsList(photo.comments);
     openSetupBigPicture();
+    console.log(photo);
   });
 };
 

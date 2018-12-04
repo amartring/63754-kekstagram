@@ -67,7 +67,6 @@ var commentCount = document.querySelector('.social__comment-count');
 var commentsLoader = document.querySelector('.comments-loader');
 var uploadButton = document.querySelector('.img-upload__input');
 var uploadWindow = document.querySelector('.img-upload__overlay');
-var uploadWindowSubmit = uploadWindow.querySelector('.img-upload__submit');
 var uploadWindowCansel = uploadWindow.querySelector('.img-upload__cancel');
 var hashtagsField = uploadWindow.querySelector('.text__hashtags');
 

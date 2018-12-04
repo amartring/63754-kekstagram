@@ -45,6 +45,15 @@ var COMMENT = {
   imgHeight: 35
 };
 var ESC_KEYCODE = 27;
+var HASHTEG = {
+  pattern: /^#[А-Яа-яЁёA-Za-z]{1,19}$/,
+  maxCount: 5
+};
+var VALIDITY_MESSAGES = {
+  tooManyHashtags: 'Нельзя указывать больше 5 хэш-тегов',
+  notUnique: 'Один и тот же хэш-тег не может быть использован дважды',
+  brokenPattern: 'Убедитесь, что: хэш-теги начинаются с #, длинна хэш-тегов не больше 20 символов, хэш-теги разделены пробелами.'
+};
 var photos = [];
 var randomCommentsArray = [];
 
@@ -58,6 +67,7 @@ var commentCount = document.querySelector('.social__comment-count');
 var commentsLoader = document.querySelector('.comments-loader');
 var uploadButton = document.querySelector('.img-upload__input');
 var uploadWindow = document.querySelector('.img-upload__overlay');
+var uploadWindowSubmit = uploadWindow.querySelector('.img-upload__submit');
 var uploadWindowCansel = uploadWindow.querySelector('.img-upload__cancel');
 var hashtagsField = uploadWindow.querySelector('.text__hashtags');
 
@@ -227,8 +237,48 @@ var onBigPictureEscPress = function (evt) {
   }
 };
 
+var convertStringIntoArray = function (field) {
+  return field.value.split(' ');
+};
+
+var checkElementsInArray = function (array, pattern) {
+  var counter = true;
+  for (var y = 0; y < array.length; y++) {
+    if (!pattern.test(array[y])) {
+      counter = false;
+    }
+  }
+  return counter;
+};
+
+var deleteSimilarElementsInArray = function (array) {
+  var object = {};
+  for (var u = 0; u < array.length; u++) {
+    var str = array[u].toLowerCase();
+    object[str] = true;
+  }
+  return Object.keys(object);
+};
+
+hashtagsField.addEventListener('input', function (evt) {
+  var hashtagsArray = convertStringIntoArray(hashtagsField);
+  var target = evt.target;
+  if (hashtagsArray.length > HASHTEG.maxCount) {
+    target.setCustomValidity(VALIDITY_MESSAGES.tooManyHashtags);
+  } else if (!checkElementsInArray(hashtagsArray, HASHTEG.pattern)) {
+    target.setCustomValidity(VALIDITY_MESSAGES.brokenPattern);
+  } else if (hashtagsArray.length !== deleteSimilarElementsInArray(hashtagsArray).length) {
+    target.setCustomValidity(VALIDITY_MESSAGES.notUnique);
+  } else {
+    target.setCustomValidity('');
+  }
+  if (hashtagsField.value === '') {
+    target.setCustomValidity('');
+  }
+});
+
+bigPictureCansel.addEventListener('click', closeSetupBigPicture);
+
 uploadButton.addEventListener('change', openUploadWindow);
 
 uploadWindowCansel.addEventListener('click', closeUploadWindow);
-
-bigPictureCansel.addEventListener('click', closeSetupBigPicture);

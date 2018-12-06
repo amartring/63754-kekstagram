@@ -54,6 +54,7 @@ var VALIDITY_MESSAGES = {
   notUnique: 'Один и тот же хэш-тег не может быть использован дважды',
   brokenPattern: 'Убедитесь, что: хэш-теги начинаются с #, длинна хэш-тегов не больше 20 символов, хэш-теги разделены пробелами.'
 };
+var COORDS_UNITS = 'px';
 var photos = [];
 var randomCommentsArray = [];
 
@@ -68,6 +69,9 @@ var commentsLoader = document.querySelector('.comments-loader');
 var uploadButton = document.querySelector('.img-upload__input');
 var uploadWindow = document.querySelector('.img-upload__overlay');
 var uploadWindowCansel = uploadWindow.querySelector('.img-upload__cancel');
+var effectSlider = uploadWindow.querySelector('.effect-level__line');
+var effectPin = uploadWindow.querySelector('.effect-level__pin');
+var effectDepth = uploadWindow.querySelector('.effect-level__depth');
 var hashtagsField = uploadWindow.querySelector('.text__hashtags');
 
 var createArrayOfNumbers = function () {
@@ -281,3 +285,54 @@ bigPictureCansel.addEventListener('click', closeSetupBigPicture);
 uploadButton.addEventListener('change', openUploadWindow);
 
 uploadWindowCansel.addEventListener('click', closeUploadWindow);
+
+var calcStartCoords = function (evt) {
+  return evt.clientX;
+};
+
+var calcShiftCoords = function (moveEvt, startCoords) {
+  return startCoords - moveEvt.clientX;
+};
+
+var calcBlockCoords = function (block) {
+  var blockCoords = block.getBoundingClientRect();
+  return {
+    top: blockCoords.top + pageYOffset,
+    left: blockCoords.left + pageXOffset
+  };
+};
+
+var calcNewCoords = function (moveEvt, shift, block) {
+  var blockCoords = calcBlockCoords(block);
+  var elementCoordsLeft = moveEvt.clientX - shift - blockCoords.left;
+  var blockRightEdge = block.offsetWidth;
+  if (elementCoordsLeft < 0) {
+    elementCoordsLeft = 0;
+  } else if (elementCoordsLeft > blockRightEdge) {
+    elementCoordsLeft = blockRightEdge;
+  }
+  return elementCoordsLeft + COORDS_UNITS;
+};
+
+effectPin.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+  var startCoordsX = calcStartCoords(evt);
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+    var shiftX = calcShiftCoords(moveEvt, startCoordsX);
+    startCoordsX = calcStartCoords(moveEvt);
+    var finalPinCoords = calcNewCoords(moveEvt, shiftX, effectSlider);
+    effectPin.style.left = finalPinCoords;
+    effectDepth.style.width = finalPinCoords;
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+});

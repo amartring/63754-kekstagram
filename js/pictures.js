@@ -29,12 +29,12 @@ var AVATAR_NUMBER = {
   max: 6
 };
 var PHOTO_URL_ADDRESS = {
-  beginning: 'photos/',
-  ending: '.jpg'
+  begin: 'photos/',
+  end: '.jpg'
 };
 var AVATAR_SRC_ADDRESS = {
-  beginning: 'img/avatar-',
-  ending: '.svg'
+  begin: 'img/avatar-',
+  end: '.svg'
 };
 var COMMENT = {
   class: 'social__comment',
@@ -49,12 +49,12 @@ var HASHTEG = {
   pattern: /^#[А-Яа-яЁёA-Za-z]{1,19}$/,
   maxCount: 5
 };
-var VALIDITY_MESSAGES = {
+var COORDS_UNITS = 'px';
+var ValidityMessage = {
   tooManyHashtags: 'Нельзя указывать больше 5 хэш-тегов',
   notUnique: 'Один и тот же хэш-тег не может быть использован дважды',
   brokenPattern: 'Убедитесь, что: хэш-теги начинаются с #, длинна хэш-тегов не больше 20 символов, хэш-теги разделены пробелами.'
 };
-var COORDS_UNITS = 'px';
 var photos = [];
 var randomCommentsArray = [];
 
@@ -111,8 +111,8 @@ var getCommentsArray = function (initialArray, finalArray) {
   return finalArray;
 };
 
-var createPictureAdress = function (addressBeginning, addressEnding, pictureName) {
-  return addressBeginning + pictureName + addressEnding;
+var createPictureAdress = function (addressBegin, addressEnd, pictureName) {
+  return addressBegin + pictureName + addressEnd;
 };
 
 var createPhotosArray = function () {
@@ -121,7 +121,7 @@ var createPhotosArray = function () {
   shuffleArray(DESCRIPTIONS);
   for (var i = 0; i < PHOTOS_ARRAY_MAX_LENGTH; i++) {
     photos.push({});
-    photos[i].url = createPictureAdress(PHOTO_URL_ADDRESS.beginning, PHOTO_URL_ADDRESS.ending, urlsArray[i]);
+    photos[i].url = createPictureAdress(PHOTO_URL_ADDRESS.begin, PHOTO_URL_ADDRESS.end, urlsArray[i]);
     photos[i].likes = getRandomNumber(LIKES_MIN_NUMBER, LIKES_MAX_NUMBER);
     randomCommentsArray = getCommentsArray(COMMENTS, randomCommentsArray);
     photos[i].comments = randomCommentsArray.slice();
@@ -168,7 +168,7 @@ var createComment = function (commentElement) {
   var listItem = makeElement('li', COMMENT.class);
   var picture = makeElement('img', COMMENT.imgClass);
   var randomAvatar = getRandomNumber(AVATAR_NUMBER.min, AVATAR_NUMBER.max);
-  picture.src = createPictureAdress(AVATAR_SRC_ADDRESS.beginning, AVATAR_SRC_ADDRESS.ending, randomAvatar);
+  picture.src = createPictureAdress(AVATAR_SRC_ADDRESS.begin, AVATAR_SRC_ADDRESS.end, randomAvatar);
   picture.alt = COMMENT.imgAlt;
   picture.width = COMMENT.imgWidth;
   picture.height = COMMENT.imgHeight;
@@ -246,20 +246,24 @@ var convertStringIntoArray = function (field) {
 
 var checkElementsInArray = function (array, pattern) {
   var counter = true;
-  for (var y = 0; y < array.length; y++) {
-    if (!pattern.test(array[y])) {
+  array.forEach(function (item) {
+    if (!pattern.test(item)) {
       counter = false;
     }
-  }
+  });
   return counter;
 };
 
 var deleteSimilarElementsInArray = function (array) {
   var object = {};
-  for (var u = 0; u < array.length; u++) {
-    var str = array[u].toLowerCase();
+  array.forEach(function (item) {
+    var str = item.toLowerCase();
     object[str] = true;
-  }
+  });
+  // for (var u = 0; u < array.length; u++) {
+  //   var str = array[u].toLowerCase();
+  //   object[str] = true;
+  // }
   return Object.keys(object);
 };
 
@@ -267,11 +271,11 @@ hashtagsField.addEventListener('input', function (evt) {
   var hashtagsArray = convertStringIntoArray(hashtagsField);
   var target = evt.target;
   if (hashtagsArray.length > HASHTEG.maxCount) {
-    target.setCustomValidity(VALIDITY_MESSAGES.tooManyHashtags);
+    target.setCustomValidity(ValidityMessage.tooManyHashtags);
   } else if (!checkElementsInArray(hashtagsArray, HASHTEG.pattern)) {
-    target.setCustomValidity(VALIDITY_MESSAGES.brokenPattern);
+    target.setCustomValidity(ValidityMessage.brokenPattern);
   } else if (hashtagsArray.length !== deleteSimilarElementsInArray(hashtagsArray).length) {
-    target.setCustomValidity(VALIDITY_MESSAGES.notUnique);
+    target.setCustomValidity(ValidityMessage.notUnique);
   } else {
     target.setCustomValidity('');
   }

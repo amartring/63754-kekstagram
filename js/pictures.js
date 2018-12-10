@@ -427,3 +427,33 @@ effectPin.addEventListener('mousedown', function (evt) {
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('mouseup', onMouseUp);
 });
+
+// ----------------- Изменение масштаба фото ----------------------
+
+var photoScaleSmaller = uploadWindow.querySelector('.scale__control--smaller');
+var photoScaleBigger = uploadWindow.querySelector('.scale__control--bigger');
+var photoScaleValue = uploadWindow.querySelector('.scale__control--value');
+var setScaleValue = function (number) {
+  photoScaleValue.setAttribute('value', number + '%');
+};
+
+setScaleValue(100);
+
+var onPhotoScaleSmallerClick = function (value) {
+  return (value <= 25) ? 25 : value - 25;
+};
+
+var onPhotoScaleBiggerClick = function (value) {
+  return (value >= 100) ? 100 : Number(value) + 25;
+};
+
+var changedScaleValue = function (callback) {
+  var currentScaleValue = photoScaleValue.value.substring(0, photoScaleValue.value.length - 1);
+  var newScaleValue = callback(currentScaleValue);
+  setScaleValue(newScaleValue);
+  photoPreview.querySelector('img').style.transform = 'scale(' + (newScaleValue / 100).toFixed(2) + ')';
+};
+
+photoScaleSmaller.addEventListener('click', changedScaleValue.bind(null, onPhotoScaleSmallerClick));
+
+photoScaleBigger.addEventListener('click', changedScaleValue.bind(null, onPhotoScaleBiggerClick));

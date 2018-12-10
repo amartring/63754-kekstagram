@@ -322,48 +322,12 @@ var getRatioValue = function (currentCoords, block) {
   return (currentCoords / calcBlockCoords(block).width).toFixed(2);
 };
 
+var setPinPosition = function (value, block) {
+  var maxRightPosition = calcBlockCoords(block).width;
+  return (maxRightPosition * value) + COORDS_UNITS;
+};
+
 // --------------------------------- Эффекты -----------------------
-
-// var effectsNames = ['chrome', 'sepia', 'marvin', 'phobos', 'heat'];
-// var filterEffects = [
-//   {
-//     name: 'chrome',
-//     begin: 'grayscale(',
-//     end: ')'
-//   },
-//   {
-//     name: 'sepia',
-//     begin: 'sepia(',
-//     end: ')'
-//   },
-//   {
-//     name: 'marvin',
-//     begin: 'invert(',
-//     end: '%)'
-//   },
-//   {
-//     name: 'phobos',
-//     begin: 'blur(',
-//     end: 'px)'
-//   },
-//   {
-//     name: 'heat',
-//     begin: 'brightness(',
-//     end: ')'
-//   },
-//   {
-//     name: 'none',
-//     value: 'none'
-//   }
-// ];
-
-// var getFilterView = function (scaleValue) {
-//   effectLevelPin.style.left = (scaleValue) + '%';
-//   effectLevelValue.setAttribute('value', Math.round(scaleValue));
-//   effectLevelDepth.style.width = effectLevelPin.style.left;
-// };
-
-// var effect = '';
 var previewClassBegin = 'effects__preview--';
 var currentEffect = '';
 var checkedRadio = effectsList.querySelector('input[checked]');
@@ -381,8 +345,9 @@ effectsList.addEventListener('click', function (evt) {
   var effectExample = photoPreview.querySelector('img');
   effectWrapper.style.display = effectName === 'none' ? 'none' : 'block';
   changeClass(effectExample, previewClassBegin, effectName);
-  // calcNewCoords(false, false, effectSlider);
-  getFilterValue(1);
+  photoPreview.querySelector('img').style.filter = getFilterValue(1);
+  effectPin.style.left = setPinPosition(1, effectSlider);
+  effectDepth.style.width = setPinPosition(1, effectSlider);
 });
 
 var getFilterValue = function (value) {
@@ -398,17 +363,38 @@ var getFilterValue = function (value) {
       result = 'invert(' + (value * 100) + '%)';
       break;
     case 'phobos':
-      result = 'blur(' + (value * 5) + 'px)';
+      result = 'blur(' + (value * 3) + 'px)';
       break;
     case 'heat':
-      result = 'brightness(' + (value * 3) + ')';
+      result = 'brightness(' + (1 + value * 2) + ')';
       break;
     case 'none':
       result = 'none';
       break;
   }
-  // return result;
-  photoPreview.querySelector('img').style.filter = result;
+  return result;
+};
+
+var getFieldsetInputValue = function (value) {
+  var result;
+  switch (currentEffect) {
+    case 'chrome':
+      result = value;
+      break;
+    case 'sepia':
+      result = value;
+      break;
+    case 'marvin':
+      result = value * 100;
+      break;
+    case 'phobos':
+      result = value * 3;
+      break;
+    case 'heat':
+      result = 1 + value * 2;
+      break;
+  }
+  return result;
 };
 
 // ---------------------------------------------------------------
@@ -417,7 +403,7 @@ effectPin.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
   var startCoordsX = calcStartCoords(evt);
 
-  var onMouseMove = function (moveEvt, callback) {
+  var onMouseMove = function (moveEvt) {
     moveEvt.preventDefault();
     var shiftX = calcShiftCoords(moveEvt, startCoordsX);
     startCoordsX = calcStartCoords(moveEvt);
@@ -426,7 +412,10 @@ effectPin.addEventListener('mousedown', function (evt) {
     effectDepth.style.width = finalPinCoords + COORDS_UNITS;
 
     var ratio = getRatioValue(finalPinCoords, effectSlider);
-    callback(ratio);
+    photoPreview.querySelector('img').style.filter = getFilterValue(ratio);
+
+    var effectForm = effectWrapper.querySelector('input');
+    effectForm.setAttribute('value', getFieldsetInputValue(ratio));
   };
 
   var onMouseUp = function (upEvt) {
@@ -435,6 +424,6 @@ effectPin.addEventListener('mousedown', function (evt) {
     document.removeEventListener('mouseup', onMouseUp);
   };
 
-  document.addEventListener('mousemove', onMouseMove(false, getFilterValue));
+  document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('mouseup', onMouseUp);
 });

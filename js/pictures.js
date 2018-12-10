@@ -69,9 +69,12 @@ var commentsLoader = document.querySelector('.comments-loader');
 var uploadButton = document.querySelector('.img-upload__input');
 var uploadWindow = document.querySelector('.img-upload__overlay');
 var uploadWindowCansel = uploadWindow.querySelector('.img-upload__cancel');
-var effectSlider = uploadWindow.querySelector('.effect-level__line');
-var effectPin = uploadWindow.querySelector('.effect-level__pin');
-var effectDepth = uploadWindow.querySelector('.effect-level__depth');
+var photoPreview = uploadWindow.querySelector('.img-upload__preview');
+var effectsList = uploadWindow.querySelector('.effects__list');
+var effectWrapper = uploadWindow.querySelector('.effect-level');
+var effectSlider = effectWrapper.querySelector('.effect-level__line');
+var effectPin = effectWrapper.querySelector('.effect-level__pin');
+var effectDepth = effectWrapper.querySelector('.effect-level__depth');
 var hashtagsField = uploadWindow.querySelector('.text__hashtags');
 
 var createArrayOfNumbers = function () {
@@ -260,10 +263,6 @@ var deleteSimilarElementsInArray = function (array) {
     var str = item.toLowerCase();
     object[str] = true;
   });
-  // for (var u = 0; u < array.length; u++) {
-  //   var str = array[u].toLowerCase();
-  //   object[str] = true;
-  // }
   return Object.keys(object);
 };
 
@@ -302,33 +301,132 @@ var calcBlockCoords = function (block) {
   var blockCoords = block.getBoundingClientRect();
   return {
     top: blockCoords.top + pageYOffset,
-    left: blockCoords.left + pageXOffset
+    left: blockCoords.left + pageXOffset,
+    width: blockCoords.width
   };
 };
 
 var calcNewCoords = function (moveEvt, shift, block) {
   var blockCoords = calcBlockCoords(block);
   var elementCoordsLeft = moveEvt.clientX - shift - blockCoords.left;
-  var blockRightEdge = block.offsetWidth;
+  var blockRightEdge = block.offsetWidth - 1;
   if (elementCoordsLeft < 0) {
     elementCoordsLeft = 0;
   } else if (elementCoordsLeft > blockRightEdge) {
     elementCoordsLeft = blockRightEdge;
   }
-  return elementCoordsLeft + COORDS_UNITS;
+  return elementCoordsLeft;
 };
+
+var getRatioValue = function (currentCoords, block) {
+  return (currentCoords / calcBlockCoords(block).width).toFixed(2);
+};
+
+// --------------------------------- Эффекты -----------------------
+
+// var effectsNames = ['chrome', 'sepia', 'marvin', 'phobos', 'heat'];
+// var filterEffects = [
+//   {
+//     name: 'chrome',
+//     begin: 'grayscale(',
+//     end: ')'
+//   },
+//   {
+//     name: 'sepia',
+//     begin: 'sepia(',
+//     end: ')'
+//   },
+//   {
+//     name: 'marvin',
+//     begin: 'invert(',
+//     end: '%)'
+//   },
+//   {
+//     name: 'phobos',
+//     begin: 'blur(',
+//     end: 'px)'
+//   },
+//   {
+//     name: 'heat',
+//     begin: 'brightness(',
+//     end: ')'
+//   },
+//   {
+//     name: 'none',
+//     value: 'none'
+//   }
+// ];
+
+// var getFilterView = function (scaleValue) {
+//   effectLevelPin.style.left = (scaleValue) + '%';
+//   effectLevelValue.setAttribute('value', Math.round(scaleValue));
+//   effectLevelDepth.style.width = effectLevelPin.style.left;
+// };
+
+// var effect = '';
+var previewClassBegin = 'effects__preview--';
+var currentEffect = '';
+var checkedRadio = effectsList.querySelector('input[checked]');
+
+var changeClass = function (element, classBegin, classsEnd) {
+  element.classList.remove();
+  element.classList.add(classBegin + classsEnd);
+};
+
+checkedRadio.removeAttribute('checked');
+effectsList.addEventListener('click', function (evt) {
+  var target = evt.target;
+  var effectName = target.value;
+  currentEffect = effectName;
+  var effectExample = photoPreview.querySelector('img');
+  effectWrapper.style.display = effectName === 'none' ? 'none' : 'block';
+  changeClass(effectExample, previewClassBegin, effectName);
+  // calcNewCoords(false, false, effectSlider);
+  getFilterValue(1);
+});
+
+var getFilterValue = function (value) {
+  var result;
+  switch (currentEffect) {
+    case 'chrome':
+      result = 'grayscale(' + value + ')';
+      break;
+    case 'sepia':
+      result = 'sepia(' + value + ')';
+      break;
+    case 'marvin':
+      result = 'invert(' + (value * 100) + '%)';
+      break;
+    case 'phobos':
+      result = 'blur(' + (value * 5) + 'px)';
+      break;
+    case 'heat':
+      result = 'brightness(' + (value * 3) + ')';
+      break;
+    case 'none':
+      result = 'none';
+      break;
+  }
+  // return result;
+  photoPreview.querySelector('img').style.filter = result;
+};
+
+// ---------------------------------------------------------------
 
 effectPin.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
   var startCoordsX = calcStartCoords(evt);
 
-  var onMouseMove = function (moveEvt) {
+  var onMouseMove = function (moveEvt, callback) {
     moveEvt.preventDefault();
     var shiftX = calcShiftCoords(moveEvt, startCoordsX);
     startCoordsX = calcStartCoords(moveEvt);
     var finalPinCoords = calcNewCoords(moveEvt, shiftX, effectSlider);
-    effectPin.style.left = finalPinCoords;
-    effectDepth.style.width = finalPinCoords;
+    effectPin.style.left = finalPinCoords + COORDS_UNITS;
+    effectDepth.style.width = finalPinCoords + COORDS_UNITS;
+
+    var ratio = getRatioValue(finalPinCoords, effectSlider);
+    callback(ratio);
   };
 
   var onMouseUp = function (upEvt) {
@@ -337,6 +435,6 @@ effectPin.addEventListener('mousedown', function (evt) {
     document.removeEventListener('mouseup', onMouseUp);
   };
 
-  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mousemove', onMouseMove(false, getFilterValue));
   document.addEventListener('mouseup', onMouseUp);
 });

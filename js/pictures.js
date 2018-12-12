@@ -29,12 +29,12 @@ var AVATAR_NUMBER = {
   max: 6
 };
 var PHOTO_URL_ADDRESS = {
-  beginning: 'photos/',
-  ending: '.jpg'
+  begin: 'photos/',
+  end: '.jpg'
 };
 var AVATAR_SRC_ADDRESS = {
-  beginning: 'img/avatar-',
-  ending: '.svg'
+  begin: 'img/avatar-',
+  end: '.svg'
 };
 var COMMENT = {
   class: 'social__comment',
@@ -49,7 +49,8 @@ var HASHTEG = {
   pattern: /^#[А-Яа-яЁёA-Za-z]{1,19}$/,
   maxCount: 5
 };
-var VALIDITY_MESSAGES = {
+var COORDS_UNITS = 'px';
+var ValidityMessage = {
   tooManyHashtags: 'Нельзя указывать больше 5 хэш-тегов',
   notUnique: 'Один и тот же хэш-тег не может быть использован дважды',
   brokenPattern: 'Убедитесь, что: хэш-теги начинаются с #, длинна хэш-тегов не больше 20 символов, хэш-теги разделены пробелами.'
@@ -68,6 +69,12 @@ var commentsLoader = document.querySelector('.comments-loader');
 var uploadButton = document.querySelector('.img-upload__input');
 var uploadWindow = document.querySelector('.img-upload__overlay');
 var uploadWindowCansel = uploadWindow.querySelector('.img-upload__cancel');
+var photoPreview = uploadWindow.querySelector('.img-upload__preview');
+var effectsList = uploadWindow.querySelector('.effects__list');
+var effectWrapper = uploadWindow.querySelector('.effect-level');
+var effectSlider = effectWrapper.querySelector('.effect-level__line');
+var effectPin = effectWrapper.querySelector('.effect-level__pin');
+var effectDepth = effectWrapper.querySelector('.effect-level__depth');
 var hashtagsField = uploadWindow.querySelector('.text__hashtags');
 
 var createArrayOfNumbers = function () {
@@ -107,8 +114,8 @@ var getCommentsArray = function (initialArray, finalArray) {
   return finalArray;
 };
 
-var createPictureAdress = function (addressBeginning, addressEnding, pictureName) {
-  return addressBeginning + pictureName + addressEnding;
+var createPictureAdress = function (addressBegin, addressEnd, pictureName) {
+  return addressBegin + pictureName + addressEnd;
 };
 
 var createPhotosArray = function () {
@@ -117,7 +124,7 @@ var createPhotosArray = function () {
   shuffleArray(DESCRIPTIONS);
   for (var i = 0; i < PHOTOS_ARRAY_MAX_LENGTH; i++) {
     photos.push({});
-    photos[i].url = createPictureAdress(PHOTO_URL_ADDRESS.beginning, PHOTO_URL_ADDRESS.ending, urlsArray[i]);
+    photos[i].url = createPictureAdress(PHOTO_URL_ADDRESS.begin, PHOTO_URL_ADDRESS.end, urlsArray[i]);
     photos[i].likes = getRandomNumber(LIKES_MIN_NUMBER, LIKES_MAX_NUMBER);
     randomCommentsArray = getCommentsArray(COMMENTS, randomCommentsArray);
     photos[i].comments = randomCommentsArray.slice();
@@ -164,7 +171,7 @@ var createComment = function (commentElement) {
   var listItem = makeElement('li', COMMENT.class);
   var picture = makeElement('img', COMMENT.imgClass);
   var randomAvatar = getRandomNumber(AVATAR_NUMBER.min, AVATAR_NUMBER.max);
-  picture.src = createPictureAdress(AVATAR_SRC_ADDRESS.beginning, AVATAR_SRC_ADDRESS.ending, randomAvatar);
+  picture.src = createPictureAdress(AVATAR_SRC_ADDRESS.begin, AVATAR_SRC_ADDRESS.end, randomAvatar);
   picture.alt = COMMENT.imgAlt;
   picture.width = COMMENT.imgWidth;
   picture.height = COMMENT.imgHeight;
@@ -242,20 +249,20 @@ var convertStringIntoArray = function (field) {
 
 var checkElementsInArray = function (array, pattern) {
   var counter = true;
-  for (var y = 0; y < array.length; y++) {
-    if (!pattern.test(array[y])) {
+  array.forEach(function (item) {
+    if (!pattern.test(item)) {
       counter = false;
     }
-  }
+  });
   return counter;
 };
 
 var deleteSimilarElementsInArray = function (array) {
   var object = {};
-  for (var u = 0; u < array.length; u++) {
-    var str = array[u].toLowerCase();
+  array.forEach(function (item) {
+    var str = item.toLowerCase();
     object[str] = true;
-  }
+  });
   return Object.keys(object);
 };
 
@@ -263,11 +270,11 @@ hashtagsField.addEventListener('input', function (evt) {
   var hashtagsArray = convertStringIntoArray(hashtagsField);
   var target = evt.target;
   if (hashtagsArray.length > HASHTEG.maxCount) {
-    target.setCustomValidity(VALIDITY_MESSAGES.tooManyHashtags);
+    target.setCustomValidity(ValidityMessage.tooManyHashtags);
   } else if (!checkElementsInArray(hashtagsArray, HASHTEG.pattern)) {
-    target.setCustomValidity(VALIDITY_MESSAGES.brokenPattern);
+    target.setCustomValidity(ValidityMessage.brokenPattern);
   } else if (hashtagsArray.length !== deleteSimilarElementsInArray(hashtagsArray).length) {
-    target.setCustomValidity(VALIDITY_MESSAGES.notUnique);
+    target.setCustomValidity(ValidityMessage.notUnique);
   } else {
     target.setCustomValidity('');
   }
@@ -281,3 +288,182 @@ bigPictureCansel.addEventListener('click', closeSetupBigPicture);
 uploadButton.addEventListener('change', openUploadWindow);
 
 uploadWindowCansel.addEventListener('click', closeUploadWindow);
+
+var calcStartCoords = function (evt) {
+  return evt.clientX;
+};
+
+var calcShiftCoords = function (moveEvt, startCoords) {
+  return startCoords - moveEvt.clientX;
+};
+
+var calcBlockCoords = function (block) {
+  var blockCoords = block.getBoundingClientRect();
+  return {
+    top: blockCoords.top + pageYOffset,
+    left: blockCoords.left + pageXOffset,
+    width: blockCoords.width
+  };
+};
+
+var calcNewCoords = function (moveEvt, shift, block) {
+  var blockCoords = calcBlockCoords(block);
+  var elementCoordsLeft = moveEvt.clientX - shift - blockCoords.left;
+  var blockRightEdge = block.offsetWidth - 1;
+  if (elementCoordsLeft < 0) {
+    elementCoordsLeft = 0;
+  } else if (elementCoordsLeft > blockRightEdge) {
+    elementCoordsLeft = blockRightEdge;
+  }
+  return elementCoordsLeft;
+};
+
+var getRatioValue = function (currentCoords, block) {
+  return (currentCoords / calcBlockCoords(block).width).toFixed(2);
+};
+
+var setPinPosition = function (value, block) {
+  var maxRightPosition = calcBlockCoords(block).width;
+  return (maxRightPosition * value) + COORDS_UNITS;
+};
+
+// --------------------------------- Эффекты -----------------------
+var previewClassBegin = 'effects__preview--';
+var currentEffect = '';
+var checkedRadio = effectsList.querySelector('input[checked]');
+
+var changeClass = function (element, classBegin, classsEnd) {
+  element.classList.remove();
+  element.classList.add(classBegin + classsEnd);
+};
+
+checkedRadio.removeAttribute('checked');
+effectsList.addEventListener('click', function (evt) {
+  var target = evt.target;
+  var effectName = target.value;
+  currentEffect = effectName;
+  var effectExample = photoPreview.querySelector('img');
+  effectWrapper.style.display = effectName === 'none' ? 'none' : 'block';
+  changeClass(effectExample, previewClassBegin, effectName);
+  photoPreview.querySelector('img').style.filter = getFilterValue(1);
+  effectPin.style.left = setPinPosition(1, effectSlider);
+  effectDepth.style.width = setPinPosition(1, effectSlider);
+});
+
+var getFilterValue = function (value) {
+  var result;
+  switch (currentEffect) {
+    case 'chrome':
+      result = 'grayscale(' + value + ')';
+      break;
+    case 'sepia':
+      result = 'sepia(' + value + ')';
+      break;
+    case 'marvin':
+      result = 'invert(' + (value * 100) + '%)';
+      break;
+    case 'phobos':
+      result = 'blur(' + (value * 3) + 'px)';
+      break;
+    case 'heat':
+      result = 'brightness(' + (1 + value * 2) + ')';
+      break;
+    case 'none':
+      result = 'none';
+      break;
+  }
+  return result;
+};
+
+var getFieldsetInputValue = function (value) {
+  var result;
+  switch (currentEffect) {
+    case 'chrome':
+      result = value;
+      break;
+    case 'sepia':
+      result = value;
+      break;
+    case 'marvin':
+      result = value * 100;
+      break;
+    case 'phobos':
+      result = value * 3;
+      break;
+    case 'heat':
+      result = 1 + value * 2;
+      break;
+  }
+  return result;
+};
+
+// ---------------------------------------------------------------
+
+effectPin.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+  var startCoordsX = calcStartCoords(evt);
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+    var shiftX = calcShiftCoords(moveEvt, startCoordsX);
+    startCoordsX = calcStartCoords(moveEvt);
+    var finalPinCoords = calcNewCoords(moveEvt, shiftX, effectSlider);
+    effectPin.style.left = finalPinCoords + COORDS_UNITS;
+    effectDepth.style.width = finalPinCoords + COORDS_UNITS;
+
+    var ratio = getRatioValue(finalPinCoords, effectSlider);
+    photoPreview.querySelector('img').style.filter = getFilterValue(ratio);
+
+    var effectForm = effectWrapper.querySelector('input');
+    effectForm.setAttribute('value', getFieldsetInputValue(ratio));
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+});
+
+// ----------------- Изменение масштаба фото ----------------------
+
+var EXTREME_VALUES = {
+  min: 25,
+  max: 100
+};
+var TRANSFORM = {
+  begin: 'scale(',
+  end: ')'
+};
+var photoScaleSmaller = uploadWindow.querySelector('.scale__control--smaller');
+var photoScaleBigger = uploadWindow.querySelector('.scale__control--bigger');
+var photoScaleValue = uploadWindow.querySelector('.scale__control--value');
+var setScaleValue = function (number) {
+  photoScaleValue.setAttribute('value', number + '%');
+};
+
+setScaleValue(EXTREME_VALUES.max);
+
+var onPhotoScaleSmallerClick = function (value) {
+  return (value <= EXTREME_VALUES.min) ? EXTREME_VALUES.min : value - 25;
+};
+
+var onPhotoScaleBiggerClick = function (value) {
+  return (value >= EXTREME_VALUES.max) ? EXTREME_VALUES.max : Number(value) + 25;
+};
+
+var changedScaleValue = function (callback) {
+  var currentScaleValue = photoScaleValue.value.substring(0, photoScaleValue.value.length - 1);
+  var newScaleValue = callback(currentScaleValue);
+  setScaleValue(newScaleValue);
+  photoPreview.querySelector('img')
+  .style
+  .transform = TRANSFORM.begin + (newScaleValue / 100).toFixed(2) + TRANSFORM.end;
+};
+
+photoScaleSmaller.addEventListener('click', changedScaleValue.bind(null, onPhotoScaleSmallerClick));
+
+photoScaleBigger.addEventListener('click', changedScaleValue.bind(null, onPhotoScaleBiggerClick));

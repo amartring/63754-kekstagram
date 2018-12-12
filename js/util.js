@@ -5,7 +5,7 @@
   var photoPreview = uploadWindow.querySelector('.img-upload__preview');
 
   window.util = {
-    COORDS_UNITS: 'px',
+    COORDS_UNIT: 'px',
     uploadWindow: uploadWindow,
     photoPreview: photoPreview
 

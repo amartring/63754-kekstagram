@@ -5,6 +5,7 @@
     min: 25,
     max: 100
   };
+  var SCALE_STEP = 25;
   var TRANSFORM = {
     begin: 'scale(',
     end: ')'
@@ -19,11 +20,11 @@
   setScaleValue(EXTREME_VALUES.max);
 
   var onPhotoScaleSmallerClick = function (value) {
-    return (value <= EXTREME_VALUES.min) ? EXTREME_VALUES.min : value - 25;
+    return (value <= EXTREME_VALUES.min) ? EXTREME_VALUES.min : value - SCALE_STEP;
   };
 
   var onPhotoScaleBiggerClick = function (value) {
-    return (value >= EXTREME_VALUES.max) ? EXTREME_VALUES.max : Number(value) + 25;
+    return (value >= EXTREME_VALUES.max) ? EXTREME_VALUES.max : Number(value) + SCALE_STEP;
   };
 
   var changedScaleValue = function (callback) {

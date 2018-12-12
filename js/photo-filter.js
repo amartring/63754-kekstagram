@@ -5,7 +5,10 @@
 
   var previewClassBegin = 'effects__preview--';
   var currentEffect = '';
+  // var radioButtons = effectsList.querySelectorAll('input');
   var checkedRadio = effectsList.querySelector('input[checked]');
+
+  // console.log(radioButtons);
 
   var changeClass = function (element, classBegin, classsEnd) {
     element.classList.remove();
@@ -13,7 +16,9 @@
   };
 
   checkedRadio.removeAttribute('checked');
-  effectsList.addEventListener('click', function (evt) {
+  window.slider.effectWrapper.style.display = 'none';
+  // window.slider.effectWrapper.firstChild.
+  effectsList.addEventListener('change', function (evt) {
     var target = evt.target;
     var effectName = target.value;
     currentEffect = effectName;

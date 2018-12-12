@@ -1,6 +1,11 @@
 'use strict';
 
 (function () {
+  var SLIDER_STEP = 1;
+  var Keycode = {
+    LEFT_ARROW: 37,
+    RIGHT_ARROW: 39
+  };
   var effectWrapper = window.util.uploadWindow.querySelector('.effect-level');
   var effectSlider = effectWrapper.querySelector('.effect-level__line');
   var effectPin = effectWrapper.querySelector('.effect-level__pin');
@@ -42,7 +47,7 @@
 
   var setPinPosition = function (value, block) {
     var maxRightPosition = calcBlockCoords(block).width;
-    return (maxRightPosition * value) + window.util.COORDS_UNITS;
+    return (maxRightPosition * value) + window.util.COORDS_UNIT;
   };
 
   effectPin.addEventListener('mousedown', function (evt) {
@@ -54,8 +59,8 @@
       var shiftX = calcShiftCoords(moveEvt, startCoordsX);
       startCoordsX = calcStartCoords(moveEvt);
       var finalPinCoords = calcNewCoords(moveEvt, shiftX, effectSlider);
-      effectPin.style.left = finalPinCoords + window.util.COORDS_UNITS;
-      effectDepth.style.width = finalPinCoords + window.util.COORDS_UNITS;
+      effectPin.style.left = finalPinCoords + window.util.COORDS_UNIT;
+      effectDepth.style.width = finalPinCoords + window.util.COORDS_UNIT;
 
       var ratio = getRatioValue(finalPinCoords, effectSlider);
       photoPreview.querySelector('img').style.filter = window.photoFilter.getFilterValue(ratio);
@@ -72,6 +77,51 @@
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+  });
+
+  document.addEventListener('keydown', function (evt) {
+
+    var onSliderLeftArrowPress = function (pin) {
+      if (evt.keyCode === Keycode.LEFT_ARROW) {
+        evt.preventDefault();
+        var pinPosition = pin.style.left.substring(0, pin.style.left.length - 2);
+        if (pinPosition < 0) {
+          pinPosition = 0;
+        } else {
+          pinPosition = Number(pinPosition) - SLIDER_STEP;
+        }
+      }
+      effectPin.style.left = pinPosition + window.util.COORDS_UNIT;
+      effectDepth.style.width = pinPosition + window.util.COORDS_UNIT;
+
+      var ratio = getRatioValue(pinPosition, effectSlider);
+      photoPreview.querySelector('img').style.filter = window.photoFilter.getFilterValue(ratio);
+    };
+
+    var onSliderRightArrowPress = function (pin, block) {
+      if (evt.keyCode === Keycode.RIGHT_ARROW) {
+        evt.preventDefault();
+        var rightLimit = block.offsetWidth - 1;
+        var pinPosition = pin.style.left.substring(0, pin.style.left.length - 2);
+        if (pinPosition > rightLimit) {
+          pinPosition = rightLimit;
+        } else {
+          pinPosition = Number(pinPosition) + SLIDER_STEP;
+        }
+      }
+      effectPin.style.left = pinPosition + window.util.COORDS_UNIT;
+      effectDepth.style.width = pinPosition + window.util.COORDS_UNIT;
+
+      var ratio = getRatioValue(pinPosition, effectSlider);
+      photoPreview.querySelector('img').style.filter = window.photoFilter.getFilterValue(ratio);
+    };
+
+    onSliderLeftArrowPress(effectPin);
+    onSliderRightArrowPress(effectPin, effectSlider);
+
+    // var effectPinPositon = effectPin.style.left.substring(0, effectPin.style.left.length - 2);
+    // effectDepth.style.width = (sliderLeftEdge.toFixed(2) + effectPinPositon) + window.util.COORDS_UNIT;
+    // console.log(effectDepth.style.width);
   });
 
   window.slider = {

@@ -5,10 +5,8 @@
 
   var previewClassBegin = 'effects__preview--';
   var currentEffect = '';
-  // var radioButtons = effectsList.querySelectorAll('input');
   var checkedRadio = effectsList.querySelector('input[checked]');
-
-  // console.log(radioButtons);
+  var noFilterElement = effectsList.querySelector('#effect-none');
 
   var changeClass = function (element, classBegin, classsEnd) {
     element.classList.remove();
@@ -16,8 +14,8 @@
   };
 
   checkedRadio.removeAttribute('checked');
+  noFilterElement.setAttribute('checked', 'checked');
   window.slider.effectWrapper.style.display = 'none';
-  // window.slider.effectWrapper.firstChild.
   effectsList.addEventListener('change', function (evt) {
     var target = evt.target;
     var effectName = target.value;

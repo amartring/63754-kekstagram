@@ -81,7 +81,7 @@
 
   document.addEventListener('keydown', function (evt) {
 
-    var onSliderLeftArrowPress = function (pin) {
+    var onLeftArrowPress = function (pin) {
       if (evt.keyCode === Keycode.LEFT_ARROW) {
         evt.preventDefault();
         var pinPosition = pin.style.left.substring(0, pin.style.left.length - 2);
@@ -98,7 +98,7 @@
       photoPreview.querySelector('img').style.filter = window.photoFilter.getFilterValue(ratio);
     };
 
-    var onSliderRightArrowPress = function (pin, block) {
+    var onRightArrowPress = function (pin, block) {
       if (evt.keyCode === Keycode.RIGHT_ARROW) {
         evt.preventDefault();
         var rightLimit = block.offsetWidth - 1;
@@ -116,12 +116,8 @@
       photoPreview.querySelector('img').style.filter = window.photoFilter.getFilterValue(ratio);
     };
 
-    onSliderLeftArrowPress(effectPin);
-    onSliderRightArrowPress(effectPin, effectSlider);
-
-    // var effectPinPositon = effectPin.style.left.substring(0, effectPin.style.left.length - 2);
-    // effectDepth.style.width = (sliderLeftEdge.toFixed(2) + effectPinPositon) + window.util.COORDS_UNIT;
-    // console.log(effectDepth.style.width);
+    onLeftArrowPress(effectPin);
+    onRightArrowPress(effectPin, effectSlider);
   });
 
   window.slider = {

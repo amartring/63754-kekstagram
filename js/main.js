@@ -1,41 +1,6 @@
 'use strict';
 
-var PHOTOS_ARRAY_MAX_LENGTH = 25;
-var LIKES_MIN_NUMBER = 15;
-var LIKES_MAX_NUMBER = 200;
-var COMMENTS = [
-  'Всё отлично!',
-  'В целом всё неплохо. Но не всё.',
-  'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
-  'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
-  'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
-  'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
-];
-var DESCRIPTIONS = [
-  'Тестим новую камеру!',
-  'Затусили с друзьями на море',
-  'Как же круто тут кормят',
-  'Отдыхаем...',
-  'Цените каждое мгновенье. Цените тех, кто рядом с вами и отгоняйте все сомненья. Не обижайте всех словами......',
-  'Вот это тачка!'
-];
-var COMMENTS_NUMBER = {
-  min: 1,
-  max: 10
-};
 var MAX_COMMENTS_VIEW_NUMBER = 5;
-var AVATAR_NUMBER = {
-  min: 1,
-  max: 6
-};
-var PHOTO_URL_ADDRESS = {
-  begin: 'photos/',
-  end: '.jpg'
-};
-var AVATAR_SRC_ADDRESS = {
-  begin: 'img/avatar-',
-  end: '.svg'
-};
 var COMMENT = {
   class: 'social__comment',
   imgClass: 'social__picture',
@@ -46,7 +11,6 @@ var COMMENT = {
 };
 var ESC_KEYCODE = 27;
 var photos = [];
-var randomCommentsArray = [];
 
 var setupSimilarPicture = document.querySelector('.pictures');
 var setupBigPicture = document.querySelector('.big-picture');
@@ -59,14 +23,7 @@ var commentsLoader = document.querySelector('.comments-loader');
 var uploadButton = document.querySelector('.img-upload__input');
 var uploadWindow = document.querySelector('.img-upload__overlay');
 var uploadWindowCansel = uploadWindow.querySelector('.img-upload__cancel');
-
-var createArrayOfNumbers = function () {
-  var result = [];
-  for (var i = 1; i <= PHOTOS_ARRAY_MAX_LENGTH; i++) {
-    result.push(i);
-  }
-  return result;
-};
+var uploadWindowSubmit = uploadWindow.querySelector('.img-upload__submit');
 
 var shuffleArray = function (array) {
   for (var j = array.length - 1; j > 0; j--) {
@@ -76,45 +33,6 @@ var shuffleArray = function (array) {
     array[randomNumber] = temp;
   }
   return array;
-};
-
-var getRandomNumber = function (min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-var getCommentsArray = function (initialArray, finalArray) {
-  var finalArrayLength = getRandomNumber(COMMENTS_NUMBER.min, COMMENTS_NUMBER.max);
-  for (var i = 0; i < finalArrayLength; i++) {
-    shuffleArray(initialArray);
-    var randomComments = getRandomNumber(1, 2);
-    if (randomComments === 1) {
-      finalArray[i] = initialArray[getRandomNumber(0, initialArray.length - 1)];
-    } else {
-      var randomIndexNumber = getRandomNumber(0, initialArray.length - 2);
-      finalArray[i] = initialArray[randomIndexNumber] + ' ' + initialArray[randomIndexNumber + 1];
-    }
-  }
-  return finalArray;
-};
-
-var createPictureAdress = function (addressBegin, addressEnd, pictureName) {
-  return addressBegin + pictureName + addressEnd;
-};
-
-var createPhotosArray = function () {
-  var urlsArray = createArrayOfNumbers();
-  shuffleArray(urlsArray);
-  shuffleArray(DESCRIPTIONS);
-  for (var i = 0; i < PHOTOS_ARRAY_MAX_LENGTH; i++) {
-    photos.push({});
-    photos[i].url = createPictureAdress(PHOTO_URL_ADDRESS.begin, PHOTO_URL_ADDRESS.end, urlsArray[i]);
-    photos[i].likes = getRandomNumber(LIKES_MIN_NUMBER, LIKES_MAX_NUMBER);
-    randomCommentsArray = getCommentsArray(COMMENTS, randomCommentsArray);
-    photos[i].comments = randomCommentsArray.slice();
-    randomCommentsArray.splice(0, randomCommentsArray.length);
-    photos[i].description = DESCRIPTIONS[getRandomNumber(0, DESCRIPTIONS.length - 1)];
-  }
-  return photos;
 };
 
 var createPicture = function (photo) {
@@ -156,13 +74,12 @@ var makeElement = function (tegName, className, text) {
 var createComment = function (commentElement) {
   var listItem = makeElement('li', COMMENT.class);
   var picture = makeElement('img', COMMENT.imgClass);
-  var randomAvatar = getRandomNumber(AVATAR_NUMBER.min, AVATAR_NUMBER.max);
-  picture.src = createPictureAdress(AVATAR_SRC_ADDRESS.begin, AVATAR_SRC_ADDRESS.end, randomAvatar);
+  picture.src = commentElement.avatar;
   picture.alt = COMMENT.imgAlt;
   picture.width = COMMENT.imgWidth;
   picture.height = COMMENT.imgHeight;
   listItem.appendChild(picture);
-  var text = makeElement('p', COMMENT.textClass, commentElement);
+  var text = makeElement('p', COMMENT.textClass, commentElement.message);
   listItem.appendChild(text);
   return listItem;
 };
@@ -173,9 +90,6 @@ var createCommentsList = function (array) {
   }
 };
 
-var fragment = document.createDocumentFragment();
-createPhotosArray();
-
 var showFullscreenPicture = function (photo) {
   return function () {
     createBigPicture(photo);
@@ -185,19 +99,26 @@ var showFullscreenPicture = function (photo) {
   };
 };
 
-photos.forEach(function (item) {
-  var createCurrentPicture = createPicture(item);
-  createCurrentPicture.addEventListener('click', showFullscreenPicture(item));
-  fragment.appendChild(createCurrentPicture);
-});
+// -------------------------------------------------------------
 
-setupSimilarPicture.appendChild(fragment);
+var onGetSuccess = function (data) {
+  photos = data;
+  shuffleArray(photos);
+  var fragment = document.createDocumentFragment();
+  photos.forEach(function (item) {
+    var currentPhoto = createPicture(item);
+    currentPhoto.addEventListener('click', showFullscreenPicture(item));
+    fragment.appendChild(currentPhoto);
+  });
+  setupSimilarPicture.appendChild(fragment);
+};
+
+window.backend.load(onGetSuccess, window.backend.onError);
 
 commentCount.classList.add('hidden');
 commentsLoader.classList.add('hidden');
 
-
-// -------------------------------------------------------------
+// ----------------------------------------------------------------
 
 var openUploadWindow = function () {
   uploadWindow.classList.remove('hidden');
@@ -237,3 +158,13 @@ bigPictureCansel.addEventListener('click', closeSetupBigPicture);
 uploadButton.addEventListener('change', openUploadWindow);
 
 uploadWindowCansel.addEventListener('click', closeUploadWindow);
+
+var onPostSuccess = function () {
+  uploadWindow.classList.add('hidden');
+};
+
+uploadWindowSubmit.addEventListener('click', function (evt) {
+  evt.preventDefault();
+  window.backend.save(new FormData(uploadWindow), onPostSuccess, window.backend.onError);
+  // evt.preventDefault();
+});

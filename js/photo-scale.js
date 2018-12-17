@@ -13,6 +13,7 @@
   var photoScaleSmaller = window.util.uploadWindow.querySelector('.scale__control--smaller');
   var photoScaleBigger = window.util.uploadWindow.querySelector('.scale__control--bigger');
   var photoScaleValue = window.util.uploadWindow.querySelector('.scale__control--value');
+
   var setScaleValue = function (number) {
     photoScaleValue.setAttribute('value', number + '%');
   };
@@ -39,4 +40,9 @@
   photoScaleSmaller.addEventListener('click', changedScaleValue.bind(null, onPhotoScaleSmallerClick));
 
   photoScaleBigger.addEventListener('click', changedScaleValue.bind(null, onPhotoScaleBiggerClick));
+
+  window.photoScale = {
+    // setScaleValue: setScaleValue,
+    // EXTREME_VALUES: EXTREME_VALUES
+  };
 })();

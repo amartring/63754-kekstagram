@@ -88,8 +88,8 @@
     var xhr = new XMLHttpRequest();
 
     tuneObject(xhr, onLoad);
-    // connectError(xhr);
-    // timeoutError(xhr);
+    connectError(xhr);
+    timeoutError(xhr);
 
     xhr.addEventListener('error', function () {
       onError(Error.CONNECT);
@@ -104,18 +104,10 @@
     xhr.send(data);
   };
 
-  // var createErrorMessage = function (errorMessage) {
-  //   var errorElement = errorMessageTemplate.cloneNode(true);
-  //   errorElement.textContent = errorMessage;
-  //   return errorElement;
-  // };
-
   var onError = function (errorMessage) {
     var errorElement = errorMessageTemplate.cloneNode(true);
     errorElement.textContent = errorMessage;
     main.appendChild(errorElement);
-
-    // document.body.insertAdjacentElement('afterbegin', errorMessageBlock);
   };
 
   window.backend = {

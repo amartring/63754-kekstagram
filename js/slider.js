@@ -6,7 +6,7 @@
     LEFT_ARROW: 37,
     RIGHT_ARROW: 39
   };
-  var effectWrapper = window.util.uploadWindow.querySelector('.effect-level');
+  var effectWrapper = document.querySelector('.effect-level');
   var effectSlider = effectWrapper.querySelector('.effect-level__line');
   var effectPin = effectWrapper.querySelector('.effect-level__pin');
   var effectDepth = effectWrapper.querySelector('.effect-level__depth');
@@ -89,19 +89,11 @@
       var pinPosition = pin.style.left.substring(0, pin.style.left.length - 2);
       if (evt.keyCode === Keycode.LEFT_ARROW) {
         evt.preventDefault();
-        if (pinPosition < 0) {
-          pinPosition = 0;
-        } else {
-          pinPosition = Number(pinPosition) - SLIDER_STEP;
-        }
+        pinPosition = pinPosition < 0 ? 0 : Number(pinPosition) - SLIDER_STEP;
       } else if (evt.keyCode === Keycode.RIGHT_ARROW) {
         evt.preventDefault();
         var rightLimit = block.offsetWidth - 1;
-        if (pinPosition > rightLimit) {
-          pinPosition = rightLimit;
-        } else {
-          pinPosition = Number(pinPosition) + SLIDER_STEP;
-        }
+        pinPosition = pinPosition > rightLimit ? rightLimit : Number(pinPosition) + SLIDER_STEP;
       }
       pasteStyleInfo(pinPosition);
     };

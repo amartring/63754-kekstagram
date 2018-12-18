@@ -58,8 +58,8 @@
   };
 
   uploadForm.addEventListener('submit', function (evt) {
-    window.backend.save(new FormData(uploadForm), onPostSuccess, window.backend.onError);
     evt.preventDefault();
+    window.backend.save(new FormData(uploadForm), onPostSuccess, window.backend.onError);
   });
 
   // imgFilter.classList.remove('img-filters--inactive');

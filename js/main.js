@@ -11,6 +11,8 @@
   var uploadWindowCansel = uploadWindow.querySelector('.img-upload__cancel');
   var uploadForm = document.querySelector('.img-upload__form');
 
+  // var imgFilter = document.querySelector('.img-filters');
+
   var onUploadButtonClick = function () {
     window.photoFilter.setDefaultState();
     uploadWindow.classList.remove('hidden');
@@ -59,6 +61,8 @@
     window.backend.save(new FormData(uploadForm), onPostSuccess, window.backend.onError);
     evt.preventDefault();
   });
+
+  // imgFilter.classList.remove('img-filters--inactive');
 
   window.main = {
     openSetupBigPicture: openSetupBigPicture

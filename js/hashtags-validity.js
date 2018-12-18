@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var HASHTEG = {
+  var HASHTAG = {
     pattern: /^#[А-Яа-яЁёA-Za-z]{1,19}$/,
     maxCount: 5
   };
@@ -11,12 +11,13 @@
     brokenPattern: 'Убедитесь, что: хэш-теги разделены пробелами, начинаются с # и длина каждого не больше 20 символов.'
   };
   var hashtagsField = window.util.uploadWindow.querySelector('.text__hashtags');
+  var commentField = window.util.uploadWindow.querySelector('.text__description');
 
   var convertStringIntoArray = function (field) {
     return field.value.split(' ');
   };
 
-  var checkElementsInArray = function (array, pattern) {
+  var checkElements = function (array, pattern) {
     var counter = true;
     array.forEach(function (item) {
       if (!pattern.test(item)) {
@@ -26,7 +27,7 @@
     return counter;
   };
 
-  var deleteSimilarElementsInArray = function (array) {
+  var deleteSimilarElements = function (array) {
     var object = {};
     array.forEach(function (item) {
       var str = item.toLowerCase();
@@ -38,11 +39,11 @@
   hashtagsField.addEventListener('input', function (evt) {
     var hashtagsArray = convertStringIntoArray(hashtagsField);
     var target = evt.target;
-    if (hashtagsArray.length > HASHTEG.maxCount) {
+    if (hashtagsArray.length > HASHTAG.maxCount) {
       target.setCustomValidity(ValidityMessage.tooManyHashtags);
-    } else if (!checkElementsInArray(hashtagsArray, HASHTEG.pattern)) {
+    } else if (!checkElements(hashtagsArray, HASHTAG.pattern)) {
       target.setCustomValidity(ValidityMessage.brokenPattern);
-    } else if (hashtagsArray.length !== deleteSimilarElementsInArray(hashtagsArray).length) {
+    } else if (hashtagsArray.length !== deleteSimilarElements(hashtagsArray).length) {
       target.setCustomValidity(ValidityMessage.notUnique);
     } else {
       target.setCustomValidity('');
@@ -53,6 +54,7 @@
   });
 
   window.hashtagsValidity = {
-    hashtagsField: hashtagsField
+    hashtagsField: hashtagsField,
+    commentField: commentField
   };
 })();

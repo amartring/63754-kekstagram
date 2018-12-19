@@ -7,7 +7,7 @@
   };
   var CONNECT_TIME = 10000;
   var TIME_UNIT = 'мс';
-  var Code = {
+  var ErrorCode = {
     SUCCESS: 200,
     MOVED_PERMANENTLY: 301,
     FOUND: 302,
@@ -37,25 +37,25 @@
     object.addEventListener('load', function () {
       var error;
       switch (object.status) {
-        case Code.SUCCESS:
+        case ErrorCode.SUCCESS:
           callback(object.response);
           break;
-        case Code.MOVED_PERMANENTLY:
+        case ErrorCode.MOVED_PERMANENTLY:
           error = ErrorMessage.MOVED_PERMANENTLY;
           break;
-        case Code.FOUND:
+        case ErrorCode.FOUND:
           error = ErrorMessage.FOUND;
           break;
-        case Code.BAD_REQUEST:
+        case ErrorCode.BAD_REQUEST:
           error = ErrorMessage.BAD_REQUEST;
           break;
-        case Code.UNAUTHORIZED:
+        case ErrorCode.UNAUTHORIZED:
           error = ErrorMessage.UNAUTHORIZED;
           break;
-        case Code.NOT_FOUND:
+        case ErrorCode.NOT_FOUND:
           error = ErrorMessage.NOT_FOUND;
           break;
-        case Code.SERVER:
+        case ErrorCode.SERVER:
           error = ErrorMessage.SERVER;
           break;
         default:

@@ -17,31 +17,18 @@
   var imgFiltersForm = imgFilter.querySelector('.img-filters__form');
   var imgFiltersButton = imgFiltersForm.querySelectorAll('.img-filters__button');
   var picturesBlock = document.querySelector('.pictures');
-  var picture = picturesBlock.querySelectorAll('.picture');
+  var picture = picturesBlock.querySelectorAll('a');
 
-  var commentsComparator = function (left, right) {
-    if (left < right) {
-      return 1;
-    } else if (left > right) {
-      return -1;
-    } else {
-      return 0;
-    }
-  };
-
-  var renderNewPhoto = function () {
-    window.util.shuffleArray(photos);
-    var randomStartNumber = window.util.getRandomNumber(0, photos.length - NEW_PHOTO_NUMBER);
+  var renderNewPhoto = function (array) {
+    var randomStartNumber = window.util.getRandomNumber(0, array.length - NEW_PHOTO_NUMBER);
     var randomEndNumber = randomStartNumber + NEW_PHOTO_NUMBER;
-    var newArray = photos.slice(randomStartNumber, randomEndNumber);
-    window.render(newArray);
+    return window.util.shuffleArray(array).slice(randomStartNumber, randomEndNumber);
   };
 
-  var renderDiscussedPhoto = function () {
-    var discussedArray = photos;
-    window.render(discussedArray.sort(function (left, right) {
-      return commentsComparator(left.comments.length, right.comments.length);
-    }));
+  var renderDiscussedPhoto = function (array) {
+    return array.slice().sort(function (first, second) {
+      return second.comments.length - first.comments.length;
+    });
   };
 
   var changeClass = function (target) {
@@ -62,10 +49,10 @@
         window.render(photos);
         break;
       case Filter.NEW:
-        renderNewPhoto();
+        window.render(renderNewPhoto(photos));
         break;
       case Filter.DISCUSSED:
-        renderDiscussedPhoto();
+        window.render(renderDiscussedPhoto(photos));
         break;
     }
   };

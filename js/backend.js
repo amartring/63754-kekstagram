@@ -32,13 +32,14 @@
   var mainElement = document.querySelector('main');
   var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
 
-  var tuneObject = function (object, callback) {
-    object.responseType = 'json';
-    object.addEventListener('load', function () {
+  var tuneObject = function (callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', function () {
       var error;
-      switch (object.status) {
+      switch (xhr.status) {
         case ErrorCode.SUCCESS:
-          callback(object.response);
+          callback(xhr.response);
           break;
         case ErrorCode.MOVED_PERMANENTLY:
           error = ErrorMessage.MOVED_PERMANENTLY;
@@ -59,33 +60,33 @@
           error = ErrorMessage.SERVER;
           break;
         default:
-          error = 'Cтатус ответа: : ' + object.status + ' ' + object.statusText;
+          error = 'Cтатус ответа: : ' + xhr.status + ' ' + xhr.statusText;
       }
       if (error) {
         onError(error);
       }
     });
 
-    object.addEventListener('error', function () {
+    xhr.addEventListener('error', function () {
       onError(Error.CONNECT);
     });
 
-    object.timeout = CONNECT_TIME;
-    object.addEventListener('timeout', function () {
-      onError(Error.TIMEOUT + object.timeout + TIME_UNIT);
+    xhr.timeout = CONNECT_TIME;
+    xhr.addEventListener('timeout', function () {
+      onError(Error.TIMEOUT + xhr.timeout + TIME_UNIT);
     });
+
+    return xhr;
   };
 
   var load = function (onLoad) {
-    var xhr = new XMLHttpRequest();
-    tuneObject(xhr, onLoad);
+    var xhr = tuneObject(onLoad);
     xhr.open('GET', URL.load);
     xhr.send();
   };
 
   var save = function (data, onLoad) {
-    var xhr = new XMLHttpRequest();
-    tuneObject(xhr, onLoad);
+    var xhr = tuneObject(onLoad);
     xhr.open('POST', URL.save);
     xhr.send(data);
   };

@@ -20,19 +20,20 @@
     return window.util.setupBigPicture;
   };
 
-  var showFullscreenPicture = function (photo) {
-    return function () {
-      createBigPicture(photo);
-      window.main.openSetupBigPicture();
-      window.comments.commentsSetup(photo);
-    };
+  var onCurrentPhotoClick = function (photo) {
+    createBigPicture(photo);
+    window.main.openSetupBigPicture();
+    window.comments.commentsSetup(photo);
   };
 
   window.render = function (data) {
     var fragment = document.createDocumentFragment();
     data.forEach(function (item) {
       var currentPhoto = createPicture(item);
-      currentPhoto.addEventListener('click', showFullscreenPicture(item));
+      currentPhoto.addEventListener('click', function (evt) {
+        evt.preventDefault();
+        onCurrentPhotoClick(item);
+      });
       fragment.appendChild(currentPhoto);
     });
     setupSimilarPicture.appendChild(fragment);

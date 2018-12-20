@@ -21,6 +21,13 @@
       : (COMMENTS_VIEW_NUMBER + ' из ');
   };
 
+  var setupCommentsLoader = function () {
+    var invisibleComments = commentsList.querySelectorAll('.visually-hidden');
+    return invisibleComments.length === 0
+      ? commentsLoader.classList.add('visually-hidden')
+      : commentsLoader.classList.remove('visually-hidden');
+  };
+
   var counComments = function () {
     var visibleComments = commentsList.querySelectorAll('.social__comment:not(.visually-hidden)');
     commentsCount.firstChild.textContent = '';
@@ -47,6 +54,7 @@
         comment.classList.add('visually-hidden');
       }
       commentsList.appendChild(comment);
+      setupCommentsLoader();
     });
   };
 
@@ -56,6 +64,7 @@
       invisibleComments[i].classList.remove('visually-hidden');
     }
     counComments();
+    setupCommentsLoader();
   };
 
   var commentsSetup = function (item) {

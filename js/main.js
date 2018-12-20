@@ -4,11 +4,11 @@
   var ESC_KEYCODE = 27;
 
   var setupBigPicture = document.querySelector('.big-picture');
-  var bigPictureCansel = setupBigPicture.querySelector('.big-picture__cancel');
+  var bigPictureCancel = setupBigPicture.querySelector('.big-picture__cancel');
   var commentField = setupBigPicture.querySelector('.social__footer-text');
   var uploadButton = document.querySelector('.img-upload__input');
   var uploadWindow = document.querySelector('.img-upload__overlay');
-  var uploadWindowCansel = uploadWindow.querySelector('.img-upload__cancel');
+  var uploadWindowCancel = uploadWindow.querySelector('.img-upload__cancel');
   var uploadForm = document.querySelector('.img-upload__form');
 
   var onUploadButtonClick = function () {
@@ -45,11 +45,19 @@
     }
   };
 
-  bigPictureCansel.addEventListener('click', closeSetupBigPicture);
+  var onBigPictureCancelClick = function () {
+    closeSetupBigPicture();
+  };
+
+  var onUploadWindowCancelClick = function () {
+    closeUploadWindow();
+  };
+
+  bigPictureCancel.addEventListener('click', onBigPictureCancelClick);
 
   uploadButton.addEventListener('change', onUploadButtonClick);
 
-  uploadWindowCansel.addEventListener('click', closeUploadWindow);
+  uploadWindowCancel.addEventListener('click', onUploadWindowCancelClick);
 
   var onPostSuccess = function () {
     uploadWindow.classList.add('hidden');

@@ -3,8 +3,6 @@
 (function () {
   var photos = [];
 
-  // ----------------------------------------------------------
-
   var NEW_PHOTO_NUMBER = 10;
 
   var Filter = {
@@ -17,7 +15,6 @@
   var imgFiltersForm = imgFilter.querySelector('.img-filters__form');
   var imgFiltersButton = imgFiltersForm.querySelectorAll('.img-filters__button');
   var picturesBlock = document.querySelector('.pictures');
-  var picture = picturesBlock.querySelectorAll('a');
 
   var renderNewPhoto = function (array) {
     var randomStartNumber = window.util.getRandomNumber(0, array.length - NEW_PHOTO_NUMBER);
@@ -40,6 +37,7 @@
 
   var changeFilter = function (evt) {
     var target = evt.target;
+    var picture = picturesBlock.querySelectorAll('.picture');
     picture.forEach(function (item) {
       picturesBlock.removeChild(item);
     });

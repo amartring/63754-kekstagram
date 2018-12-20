@@ -57,7 +57,7 @@
 
   imgFiltersForm.addEventListener('click', function (evt) {
     var target = evt.target;
-    window.debounce(changeFilter(evt));
+    window.debounce(changeFilter.bind(null, evt));
     changeClass(target);
   });
 

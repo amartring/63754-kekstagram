@@ -19,7 +19,7 @@
   var renderNewPhoto = function (array) {
     var randomStartNumber = window.util.getRandomNumber(0, array.length - NEW_PHOTO_NUMBER);
     var randomEndNumber = randomStartNumber + NEW_PHOTO_NUMBER;
-    return window.util.shuffleArray(array).slice(randomStartNumber, randomEndNumber);
+    return array.slice(randomStartNumber, randomEndNumber);
   };
 
   var renderDiscussedPhoto = function (array) {

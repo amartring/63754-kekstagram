@@ -15,6 +15,10 @@
     return array;
   };
 
+  var getRandomNumber = function (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
   var makeElement = function (tegName, className, text) {
     var element = document.createElement(tegName);
     element.classList.add(className);
@@ -28,6 +32,7 @@
     photoPreview: photoPreview,
     setupBigPicture: setupBigPicture,
     shuffleArray: shuffleArray,
+    getRandomNumber: getRandomNumber,
     makeElement: makeElement
   };
 })();

@@ -40,9 +40,4 @@
   photoScaleSmaller.addEventListener('click', changedScaleValue.bind(null, onPhotoScaleSmallerClick));
 
   photoScaleBigger.addEventListener('click', changedScaleValue.bind(null, onPhotoScaleBiggerClick));
-
-  window.photoScale = {
-    // setScaleValue: setScaleValue,
-    // EXTREME_VALUES: EXTREME_VALUES
-  };
 })();

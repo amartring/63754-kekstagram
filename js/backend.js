@@ -32,7 +32,7 @@
   var mainElement = document.querySelector('main');
   var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
 
-  var tuneObject = function (callback) {
+  var setupObject = function (callback) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.addEventListener('load', function () {
@@ -80,13 +80,13 @@
   };
 
   var load = function (onLoad) {
-    var xhr = tuneObject(onLoad);
+    var xhr = setupObject(onLoad);
     xhr.open('GET', URL.load);
     xhr.send();
   };
 
   var save = function (data, onLoad) {
-    var xhr = tuneObject(onLoad);
+    var xhr = setupObject(onLoad);
     xhr.open('POST', URL.save);
     xhr.send(data);
   };

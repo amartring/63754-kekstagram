@@ -69,6 +69,7 @@
   });
 
   window.main = {
-    openSetupBigPicture: openSetupBigPicture
+    openSetupBigPicture: openSetupBigPicture,
+    uploadForm: uploadForm
   };
 })();

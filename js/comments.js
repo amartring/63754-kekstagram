@@ -28,7 +28,7 @@
       : commentsLoader.classList.remove('visually-hidden');
   };
 
-  var counComments = function () {
+  var countComments = function () {
     var visibleComments = commentsList.querySelectorAll('.social__comment:not(.visually-hidden)');
     commentsCount.firstChild.textContent = '';
     commentsCount.firstChild.textContent = visibleComments.length + ' из ';
@@ -63,7 +63,7 @@
     for (var i = 0; i < invisibleComments.length && i < COMMENTS_VIEW_NUMBER; i++) {
       invisibleComments[i].classList.remove('visually-hidden');
     }
-    counComments();
+    countComments();
     setupCommentsLoader();
   };
 

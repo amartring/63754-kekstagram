@@ -5,12 +5,10 @@
     pattern: /^#[А-Яа-яЁёA-Za-z]{1,19}$/,
     maxCount: 5
   };
-  var COMMENT_LENGTH = 140;
   var ValidityMessage = {
     TOO_MANY_HASHTAGS: 'Нельзя указывать больше 5 хэш-тегов',
     NOT_UNIQUE: 'Один и тот же хэш-тег не может быть использован дважды',
-    BROKEN_PATTERN: 'Убедитесь, что: хэш-теги разделены пробелами, начинаются с # и длина каждого не больше 20 символов.',
-    TOO_LONG_COMMENT: 'Длинна комментария не может превышать 140 символов!'
+    BROKEN_PATTERN: 'Убедитесь, что: хэш-теги разделены пробелами, начинаются с # и длина каждого не больше 20 символов.'
   };
   var hashtagsField = window.main.uploadWindow.querySelector('.text__hashtags');
   var commentField = window.main.uploadWindow.querySelector('.text__description');
@@ -41,7 +39,6 @@
   hashtagsField.addEventListener('input', function (evt) {
     var hashtags = convertStringIntoArray(hashtagsField);
     var target = evt.target;
-    hashtagsField.classList.add('text__invalid_field');
     if (hashtags.length > HASHTAG.maxCount) {
       target.setCustomValidity(ValidityMessage.TOO_MANY_HASHTAGS);
     } else if (!checkElements(hashtags, HASHTAG.pattern)) {
@@ -50,27 +47,9 @@
       target.setCustomValidity(ValidityMessage.NOT_UNIQUE);
     } else {
       target.setCustomValidity('');
-      hashtagsField.classList.remove('text__invalid_field');
     }
     if (hashtagsField.value === '') {
       target.setCustomValidity('');
-      hashtagsField.classList.remove('text__invalid_field');
-    }
-  });
-
-  commentField.addEventListener('input', function (evt) {
-    var target = evt.target;
-    var comment = commentField.value;
-    if (comment.length > COMMENT_LENGTH) {
-      target.setCustomValidity(ValidityMessage.TOO_LONG_COMMENT);
-      commentField.classList.add('text__invalid_field');
-    } else {
-      target.setCustomValidity('');
-      commentField.classList.remove('text__invalid_field');
-    }
-    if (commentField.value === '') {
-      target.setCustomValidity('');
-      commentField.classList.remove('text__invalid_field');
     }
   });
 

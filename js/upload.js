@@ -67,5 +67,5 @@
     window.render(photos);
   };
 
-  window.backend.load(onGetSuccess, window.backend.onError);
+  window.backend.load(onGetSuccess);
 })();

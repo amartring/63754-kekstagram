@@ -33,7 +33,7 @@
   var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
   var successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
 
-  var setupObject = function (callback) {
+  var setupObject = function (callback, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.addEventListener('load', function () {
@@ -77,39 +77,51 @@
   };
 
   var load = function (onLoad) {
-    var xhr = setupObject(onLoad);
+    var xhr = setupObject(onLoad, onErrorGet);
     xhr.open('GET', Url.LOAD);
     xhr.send();
   };
 
   var save = function (data, onLoad) {
-    var xhr = setupObject(onLoad);
+    var xhr = setupObject(onLoad, onErrorPost);
     xhr.open('POST', Url.SAVE);
     xhr.send(data);
   };
 
-  var onError = function (errorMessage) {
+  var onErrorGet = function (errorMessage) {
     var errorElement = errorMessageTemplate.cloneNode(true);
     errorElement.textContent = errorMessage;
     mainElement.appendChild(errorElement);
   };
 
+  var onErrorPost = function () {
+    var errorElement = errorMessageTemplate.cloneNode(true);
+    mainElement.appendChild(errorElement);
+    window.main.closeUploadWindow();
+  };
+
   var createSuccessMessage = function () {
     var successElement = successMessageTemplate.cloneNode(true);
     mainElement.appendChild(successElement);
-    successElement.classList.add('visually-hidden');
+    // successElement.classList.add('visually-hidden');
   };
 
-  createSuccessMessage();
+  // createSuccessMessage();
 
-  var successMessage = document.querySelector('.success');
-  var successMessageClose = successMessage.querySelector('.success__button');
+  // var successMessage = document.querySelector('.success');
+  // var successMessageClose = successMessage.querySelector('.success__button');
 
   var showSuccessMessage = function () {
-    successMessage.classList.remove('visually-hidden');
+    var successElement = successMessageTemplate.cloneNode(true);
+    mainElement.appendChild(successElement);
+    var successMessage = document.querySelector('.success');
+    var successMessageClose = successMessage.querySelector('.success__button');
+
+    // successMessage.classList.remove('visually-hidden');
 
     var closeSuccessMessage = function () {
-      successMessage.classList.add('visually-hidden');
+      mainElement.parentNode.removeChild(successElement);
+      // successMessage.classList.add('visually-hidden');
       document.removeEventListener('keydown', onSuccessMessageEscPress);
     };
 
@@ -131,7 +143,6 @@
   window.backend = {
     load: load,
     save: save,
-    onError: onError,
     showSuccessMessage: showSuccessMessage
   };
 })();

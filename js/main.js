@@ -76,7 +76,7 @@
 
   uploadForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    window.backend.save(new FormData(uploadForm), onPostSuccess, window.backend.onError);
+    window.backend.save(new FormData(uploadForm), onPostSuccess);
   });
 
   window.main = {
@@ -86,6 +86,7 @@
     effectWrapper: effectWrapper,
     photoPreview: photoPreview,
     setupBigPicture: setupBigPicture,
+    closeUploadWindow: closeUploadWindow,
     KeyCode: KeyCode
   };
 })();

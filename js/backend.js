@@ -98,30 +98,41 @@
     var errorElement = errorMessageTemplate.cloneNode(true);
     mainElement.appendChild(errorElement);
     window.main.closeUploadWindow();
+
+    var errorMessage = document.querySelector('.error');
+    var errorMessageClose = errorMessage.querySelectorAll('.error__button');
+
+    var closeErrorMessage = function () {
+      errorElement.remove();
+      document.removeEventListener('keydown', onErrorMessageEscPress);
+    };
+
+    var onErrorMessageEscPress = function (evt) {
+      if (evt.keyCode === window.main.KeyCode.ESC) {
+        closeErrorMessage();
+      }
+    };
+
+    var onErrorMessageCloseClick = function () {
+      closeErrorMessage();
+    };
+
+    errorMessageClose.forEach(function (item) {
+      item.addEventListener('click', onErrorMessageCloseClick);
+    });
+    document.addEventListener('keydown', onErrorMessageEscPress);
+    document.addEventListener('click', onErrorMessageCloseClick);
   };
-
-  var createSuccessMessage = function () {
-    var successElement = successMessageTemplate.cloneNode(true);
-    mainElement.appendChild(successElement);
-    // successElement.classList.add('visually-hidden');
-  };
-
-  // createSuccessMessage();
-
-  // var successMessage = document.querySelector('.success');
-  // var successMessageClose = successMessage.querySelector('.success__button');
 
   var showSuccessMessage = function () {
     var successElement = successMessageTemplate.cloneNode(true);
     mainElement.appendChild(successElement);
+
     var successMessage = document.querySelector('.success');
     var successMessageClose = successMessage.querySelector('.success__button');
 
-    // successMessage.classList.remove('visually-hidden');
-
     var closeSuccessMessage = function () {
-      mainElement.parentNode.removeChild(successElement);
-      // successMessage.classList.add('visually-hidden');
+      successElement.remove();
       document.removeEventListener('keydown', onSuccessMessageEscPress);
     };
 
@@ -131,13 +142,13 @@
       }
     };
 
-    var onsuccessMessageCloseClick = function () {
+    var onSuccessMessageCloseClick = function () {
       closeSuccessMessage();
     };
 
-    successMessageClose.addEventListener('click', onsuccessMessageCloseClick);
+    successMessageClose.addEventListener('click', onSuccessMessageCloseClick);
     document.addEventListener('keydown', onSuccessMessageEscPress);
-    document.addEventListener('click', onsuccessMessageCloseClick);
+    document.addEventListener('click', onSuccessMessageCloseClick);
   };
 
   window.backend = {

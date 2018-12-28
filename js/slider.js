@@ -2,15 +2,9 @@
 
 (function () {
   var SLIDER_STEP = 1;
-  var Keycode = {
-    LEFT_ARROW: 37,
-    RIGHT_ARROW: 39
-  };
-  var effectWrapper = document.querySelector('.effect-level');
-  var effectSlider = effectWrapper.querySelector('.effect-level__line');
-  var effectPin = effectWrapper.querySelector('.effect-level__pin');
-  var effectDepth = effectWrapper.querySelector('.effect-level__depth');
-  var photoPreview = window.util.uploadWindow.querySelector('.img-upload__preview');
+  var effectSlider = window.main.effectWrapper.querySelector('.effect-level__line');
+  var effectPin = window.main.effectWrapper.querySelector('.effect-level__pin');
+  var effectDepth = window.main.effectWrapper.querySelector('.effect-level__depth');
 
   var calcStartCoords = function (evt) {
     return evt.clientX;
@@ -31,13 +25,10 @@
 
   var calcNewCoords = function (moveEvt, shift, block) {
     var blockCoords = calcBlockCoords(block);
-    var elementCoordsLeft = moveEvt.clientX - shift - blockCoords.left;
     var blockRightEdge = block.offsetWidth - 1;
-    if (elementCoordsLeft < 0) {
-      elementCoordsLeft = 0;
-    } else if (elementCoordsLeft > blockRightEdge) {
-      elementCoordsLeft = blockRightEdge;
-    }
+    var elementCoordsLeft = moveEvt.clientX - shift - blockCoords.left;
+    elementCoordsLeft = elementCoordsLeft < 0 ? 0 : elementCoordsLeft;
+    elementCoordsLeft = elementCoordsLeft > blockRightEdge ? blockRightEdge : elementCoordsLeft;
     return elementCoordsLeft;
   };
 
@@ -55,9 +46,9 @@
     effectDepth.style.width = value + window.util.COORDS_UNIT;
 
     var ratio = getRatioValue(value, effectSlider);
-    photoPreview.querySelector('img').style.filter = window.photoFilter.getFilterValue(ratio);
+    window.main.photoPreview.querySelector('img').style.filter = window.photoFilter.getFilterValue(ratio);
 
-    var effectForm = effectWrapper.querySelector('input');
+    var effectForm = window.main.effectWrapper.querySelector('input');
     effectForm.setAttribute('value', window.photoFilter.getFieldsetInputValue(ratio));
   };
 
@@ -87,10 +78,10 @@
 
     var onArrowPress = function (pin, block) {
       var pinPosition = pin.style.left.substring(0, pin.style.left.length - 2);
-      if (evt.keyCode === Keycode.LEFT_ARROW) {
+      if (evt.keyCode === window.main.KeyCode.LEFT_ARROW) {
         evt.preventDefault();
         pinPosition = pinPosition < 0 ? 0 : Number(pinPosition) - SLIDER_STEP;
-      } else if (evt.keyCode === Keycode.RIGHT_ARROW) {
+      } else if (evt.keyCode === window.main.KeyCode.RIGHT_ARROW) {
         evt.preventDefault();
         var rightLimit = block.offsetWidth - 1;
         pinPosition = pinPosition > rightLimit ? rightLimit : Number(pinPosition) + SLIDER_STEP;
@@ -102,7 +93,6 @@
   });
 
   window.slider = {
-    effectWrapper: effectWrapper,
     effectSlider: effectSlider,
     effectPin: effectPin,
     effectDepth: effectDepth,

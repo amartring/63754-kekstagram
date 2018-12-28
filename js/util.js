@@ -1,9 +1,7 @@
 'use strict';
 
 (function () {
-  var uploadWindow = document.querySelector('.img-upload__overlay');
-  var photoPreview = uploadWindow.querySelector('.img-upload__preview');
-  var setupBigPicture = document.querySelector('.big-picture');
+  var COORDS_UNIT = 'px';
 
   var shuffleArray = function (array) {
     for (var j = array.length - 1; j > 0; j--) {
@@ -27,10 +25,7 @@
   };
 
   window.util = {
-    COORDS_UNIT: 'px',
-    uploadWindow: uploadWindow,
-    photoPreview: photoPreview,
-    setupBigPicture: setupBigPicture,
+    COORDS_UNIT: COORDS_UNIT,
     shuffleArray: shuffleArray,
     getRandomNumber: getRandomNumber,
     makeElement: makeElement

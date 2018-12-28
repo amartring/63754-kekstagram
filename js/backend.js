@@ -1,12 +1,12 @@
 'use strict';
 
 (function () {
-  var URL = {
-    load: 'https://js.dump.academy/kekstagram/data',
-    save: 'https://js.dump.academy/kekstagram'
-  };
-  var CONNECT_TIME = 10000;
+  var TIMEOUT = 10000;
   var TIME_UNIT = 'мс';
+  var Url = {
+    LOAD: 'https://js.dump.academy/kekstagram/data',
+    SAVE: 'https://js.dump.academy/kekstagram'
+  };
   var ErrorCode = {
     SUCCESS: 200,
     MOVED_PERMANENTLY: 301,
@@ -31,39 +31,36 @@
 
   var mainElement = document.querySelector('main');
   var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
+  var successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
 
   var setupObject = function (callback) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.addEventListener('load', function () {
-      var error;
       switch (xhr.status) {
         case ErrorCode.SUCCESS:
           callback(xhr.response);
           break;
         case ErrorCode.MOVED_PERMANENTLY:
-          error = ErrorMessage.MOVED_PERMANENTLY;
+          onError(ErrorMessage.MOVED_PERMANENTLY);
           break;
         case ErrorCode.FOUND:
-          error = ErrorMessage.FOUND;
+          onError(ErrorMessage.FOUND);
           break;
         case ErrorCode.BAD_REQUEST:
-          error = ErrorMessage.BAD_REQUEST;
+          onError(ErrorMessage.BAD_REQUEST);
           break;
         case ErrorCode.UNAUTHORIZED:
-          error = ErrorMessage.UNAUTHORIZED;
+          onError(ErrorMessage.UNAUTHORIZED);
           break;
         case ErrorCode.NOT_FOUND:
-          error = ErrorMessage.NOT_FOUND;
+          onError(ErrorMessage.NOT_FOUND);
           break;
         case ErrorCode.SERVER:
-          error = ErrorMessage.SERVER;
+          onError(ErrorMessage.SERVER);
           break;
         default:
-          error = 'Cтатус ответа: : ' + xhr.status + ' ' + xhr.statusText;
-      }
-      if (error) {
-        onError(error);
+          onError('Cтатус ответа: : ' + xhr.status + ' ' + xhr.statusText);
       }
     });
 
@@ -71,7 +68,7 @@
       onError(Error.CONNECT);
     });
 
-    xhr.timeout = CONNECT_TIME;
+    xhr.timeout = TIMEOUT;
     xhr.addEventListener('timeout', function () {
       onError(Error.TIMEOUT + xhr.timeout + TIME_UNIT);
     });
@@ -81,13 +78,13 @@
 
   var load = function (onLoad) {
     var xhr = setupObject(onLoad);
-    xhr.open('GET', URL.load);
+    xhr.open('GET', Url.LOAD);
     xhr.send();
   };
 
   var save = function (data, onLoad) {
     var xhr = setupObject(onLoad);
-    xhr.open('POST', URL.save);
+    xhr.open('POST', Url.SAVE);
     xhr.send(data);
   };
 
@@ -97,9 +94,44 @@
     mainElement.appendChild(errorElement);
   };
 
+  var createSuccessMessage = function () {
+    var successElement = successMessageTemplate.cloneNode(true);
+    mainElement.appendChild(successElement);
+    successElement.classList.add('visually-hidden');
+  };
+
+  createSuccessMessage();
+
+  var successMessage = document.querySelector('.success');
+  var successMessageClose = successMessage.querySelector('.success__button');
+
+  var showSuccessMessage = function () {
+    successMessage.classList.remove('visually-hidden');
+
+    var closeSuccessMessage = function () {
+      successMessage.classList.add('visually-hidden');
+      document.removeEventListener('keydown', onSuccessMessageEscPress);
+    };
+
+    var onSuccessMessageEscPress = function (evt) {
+      if (evt.keyCode === window.main.KeyCode.ESC) {
+        closeSuccessMessage();
+      }
+    };
+
+    var onsuccessMessageCloseClick = function () {
+      closeSuccessMessage();
+    };
+
+    successMessageClose.addEventListener('click', onsuccessMessageCloseClick);
+    document.addEventListener('keydown', onSuccessMessageEscPress);
+    document.addEventListener('click', onsuccessMessageCloseClick);
+  };
+
   window.backend = {
     load: load,
     save: save,
-    onError: onError
+    onError: onError,
+    showSuccessMessage: showSuccessMessage
   };
 })();

@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var photos = [];
-
   var NEW_PHOTO_NUMBER = 10;
 
   var Filter = {
@@ -10,6 +8,8 @@
     NEW: 'filter-new',
     DISCUSSED: 'filter-discussed'
   };
+
+  var photos = [];
 
   var imgFilter = document.querySelector('.img-filters');
   var imgFiltersForm = imgFilter.querySelector('.img-filters__form');

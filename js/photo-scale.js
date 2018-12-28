@@ -10,9 +10,9 @@
     begin: 'scale(',
     end: ')'
   };
-  var photoScaleSmaller = window.util.uploadWindow.querySelector('.scale__control--smaller');
-  var photoScaleBigger = window.util.uploadWindow.querySelector('.scale__control--bigger');
-  var photoScaleValue = window.util.uploadWindow.querySelector('.scale__control--value');
+  var photoScaleSmaller = window.main.uploadWindow.querySelector('.scale__control--smaller');
+  var photoScaleBigger = window.main.uploadWindow.querySelector('.scale__control--bigger');
+  var photoScaleValue = window.main.uploadWindow.querySelector('.scale__control--value');
 
   var setScaleValue = function (number) {
     photoScaleValue.setAttribute('value', number + '%');
@@ -32,7 +32,7 @@
     var currentScaleValue = photoScaleValue.value.substring(0, photoScaleValue.value.length - 1);
     var newScaleValue = callback(currentScaleValue);
     setScaleValue(newScaleValue);
-    window.util.photoPreview.querySelector('img')
+    window.main.photoPreview.querySelector('img')
     .style
     .transform = TRANSFORM.begin + (newScaleValue / 100).toFixed(2) + TRANSFORM.end;
   };

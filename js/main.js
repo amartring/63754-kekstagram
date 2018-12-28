@@ -1,15 +1,23 @@
 'use strict';
 
 (function () {
-  var ESC_KEYCODE = 27;
+  var KeyCode = {
+    ESC: 27,
+    LEFT_ARROW: 37,
+    RIGHT_ARROW: 39
+  };
 
   var setupBigPicture = document.querySelector('.big-picture');
   var bigPictureCancel = setupBigPicture.querySelector('.big-picture__cancel');
   var commentField = setupBigPicture.querySelector('.social__footer-text');
-  var uploadButton = document.querySelector('.img-upload__input');
+
   var uploadWindow = document.querySelector('.img-upload__overlay');
   var uploadWindowCancel = uploadWindow.querySelector('.img-upload__cancel');
+  var photoPreview = uploadWindow.querySelector('.img-upload__preview');
+  var effectWrapper = uploadWindow.querySelector('.effect-level');
+
   var uploadForm = document.querySelector('.img-upload__form');
+  var uploadButton = uploadForm.querySelector('.img-upload__input');
 
   var onUploadButtonClick = function () {
     window.photoFilter.setDefaultState();
@@ -24,7 +32,9 @@
   };
 
   var onUploadWindowEscPress = function (evt) {
-    if (evt.keyCode === ESC_KEYCODE && window.hashtagsValidity.hashtagsField !== document.activeElement) {
+    if (evt.keyCode === KeyCode.ESC
+        && window.hashtagsValidity.hashtagsField !== document.activeElement
+        && window.hashtagsValidity.commentField !== document.activeElement) {
       closeUploadWindow();
     }
   };
@@ -40,7 +50,7 @@
   };
 
   var onBigPictureEscPress = function (evt) {
-    if (evt.keyCode === ESC_KEYCODE && commentField !== document.activeElement) {
+    if (evt.keyCode === KeyCode.ESC && commentField !== document.activeElement) {
       closeSetupBigPicture();
     }
   };
@@ -61,6 +71,7 @@
 
   var onPostSuccess = function () {
     uploadWindow.classList.add('hidden');
+    window.backend.showSuccessMessage();
   };
 
   uploadForm.addEventListener('submit', function (evt) {
@@ -70,6 +81,11 @@
 
   window.main = {
     openSetupBigPicture: openSetupBigPicture,
-    uploadForm: uploadForm
+    uploadForm: uploadForm,
+    uploadWindow: uploadWindow,
+    effectWrapper: effectWrapper,
+    photoPreview: photoPreview,
+    setupBigPicture: setupBigPicture,
+    KeyCode: KeyCode
   };
 })();

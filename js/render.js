@@ -13,11 +13,11 @@
   };
 
   var createBigPicture = function (photo) {
-    window.util.setupBigPicture.querySelector('.big-picture__img').querySelector('img').src = photo.url;
-    window.util.setupBigPicture.querySelector('.likes-count').textContent = photo.likes;
-    window.util.setupBigPicture.querySelector('.comments-count').textContent = photo.comments.length;
-    window.util.setupBigPicture.querySelector('.social__caption').textContent = photo.description;
-    return window.util.setupBigPicture;
+    window.main.setupBigPicture.querySelector('.big-picture__img').querySelector('img').src = photo.url;
+    window.main.setupBigPicture.querySelector('.likes-count').textContent = photo.likes;
+    window.main.setupBigPicture.querySelector('.comments-count').textContent = photo.comments.length;
+    window.main.setupBigPicture.querySelector('.social__caption').textContent = photo.description;
+    return window.main.setupBigPicture;
   };
 
   var onCurrentPhotoClick = function (photo) {

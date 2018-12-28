@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var PREVIEW_CLASS_BEGIN = 'effects__preview--';
   var Display = {
     BLOCK: 'block',
     NONE: 'none'
@@ -40,15 +41,16 @@
       MIN_VALUE: 1,
       MAX_VALUE: 3,
       UNIT: ''
+    },
+    none: {
+      NAME: 'none'
     }
   };
-  var effectsList = window.util.uploadWindow.querySelector('.effects__list');
-  var effectWrapper = document.querySelector('.effect-level');
+  var effectsList = window.main.uploadWindow.querySelector('.effects__list');
 
-  var previewClassBegin = 'effects__preview--';
   var currentEffect = '';
   var noFilterElement = effectsList.querySelector('#effect-none');
-  var previewPhoto = window.util.photoPreview.querySelector('img');
+  var previewPhoto = window.main.photoPreview.querySelector('img');
 
   var changeClass = function (element, classBegin, classsEnd) {
     element.classList.remove();
@@ -60,7 +62,7 @@
     previewPhoto.classList = '';
     previewPhoto.style.filter = '';
     previewPhoto.classList.remove();
-    effectWrapper.style.display = Display.NONE;
+    window.main.effectWrapper.style.display = Display.NONE;
   };
 
   var setDefaultState = function () {
@@ -69,14 +71,14 @@
     window.hashtagsValidity.commentField.value = null;
   };
 
-  window.slider.effectWrapper.classList.add('hidden');
+  window.main.effectWrapper.classList.add('hidden');
   effectsList.addEventListener('change', function (evt) {
     var target = evt.target;
     var effectName = target.value;
     currentEffect = effectName;
-    window.slider.effectWrapper.style.display = effectName === 'none' ? Display.NONE : Display.BLOCK;
-    changeClass(previewPhoto, previewClassBegin, effectName);
-    window.util.photoPreview.querySelector('img').style.filter = getFilterValue(1);
+    window.main.effectWrapper.style.display = effectName === Effect.none.NAME ? Display.NONE : Display.BLOCK;
+    changeClass(previewPhoto, PREVIEW_CLASS_BEGIN, effectName);
+    window.main.photoPreview.querySelector('img').style.filter = getFilterValue(1);
     window.slider.effectPin.style.left = window.slider.setPinPosition(1, window.slider.effectSlider);
     window.slider.effectDepth.style.width = window.slider.setPinPosition(1, window.slider.effectSlider);
   });
@@ -107,8 +109,8 @@
       case Effect.heat.NAME:
         result = compileEffectStyle(Effect.heat, value);
         break;
-      case 'none':
-        result = 'none';
+      case Effect.none.NAME:
+        result = Effect.none.NAME;
         break;
     }
     return result;

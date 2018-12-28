@@ -11,9 +11,9 @@
     imgHeight: 35
   };
 
-  var commentsList = window.util.setupBigPicture.querySelector('.social__comments');
-  var commentsCount = document.querySelector('.social__comment-count');
-  var commentsLoader = document.querySelector('.comments-loader');
+  var commentsList = window.main.setupBigPicture.querySelector('.social__comments');
+  var commentsCount = window.main.setupBigPicture.querySelector('.social__comment-count');
+  var commentsLoader = window.main.setupBigPicture.querySelector('.comments-loader');
 
   var setStartCommentsNumber = function () {
     commentsCount.firstChild.textContent = (commentsList.children.length < COMMENTS_VIEW_NUMBER)
